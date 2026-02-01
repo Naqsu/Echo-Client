@@ -1,40 +1,20 @@
-# gradle
-
+# Gradle files
 .gradle/
 build/
-out/
-classes/
 
-# eclipse
+# Fabric / Minecraft specific
+run/
+.fabric/
+mappings/
 
-*.launch
-
-# idea
-
+# IDE specific
 .idea/
 *.iml
 *.ipr
 *.iws
-
-# vscode
-
-.settings/
 .vscode/
-bin/
-.classpath
-.project
+.bin/
 
-# macos
-
-*.DS_Store
-
-# fabric
-
-run/
-
-# java
-
-hs_err_*.log
-replay_*.log
-*.hprof
-*.jfr
+# Logs and temp files
+logs/
+*.log
