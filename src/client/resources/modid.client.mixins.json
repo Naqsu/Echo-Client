@@ -1,0 +1,15 @@
+{
+	"required": true,
+	"package": "echo.mixin.client",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"MixinGui",
+		"MixinKeyboardHandler",
+		"MixinLevelRenderer",
+		"MixinLocalPlayer",
+		"MixinMinecraft"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

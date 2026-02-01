@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="main-window">
+    <!-- Header -->
+    <div class="window-header">
+        <div class="header-left">
+            <div class="logo">Echo</div>
+            <div class="version">v3.2.1 Premium</div>
+        </div>
+        <div class="header-right">
+            <div class="header-info">FPS: <span>420</span></div>
+            <div class="header-info">Ping: <span>12ms</span></div>
+            <div class="user-status" id="userStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Not logged in</span>
+            </div>
+            <div class="close-btn">✕</div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input type="text" class="search-input" id="moduleSearch" placeholder="Search modules...">
+            <div class="search-count" id="searchCount"></div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-tab="combat">Combat</div>
+        <div class="tab" data-tab="movement">Movement</div>
+        <div class="tab" data-tab="render">Render</div>
+        <div class="tab" data-tab="misc">Misc</div>
+        <div class="tab-separator"></div>
+        <div class="tab special-tab" data-tab="login">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+            </svg>
+            Login
+        </div>
+        <div class="tab special-tab" data-tab="configs">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"/>
+            </svg>
+            Configs
+        </div>
+        <div class="tab special-tab" data-tab="customize">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M2 12h20M17 7l-10 10M7 7l10 10"/>
+            </svg>
+            Customize
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="modules-section">
+            <!-- Combat Tab -->
+            <div class="tab-content active" data-content="combat">
+                <div class="modules-grid">
+                    <div class="module active" data-module="killaura" data-search="killaura aura combat attack">
+                        <div class="module-top">
+                            <div class="module-name">KillAura</div>
+                            <div class="module-key">R</div>
+                        </div>
+                        <div class="module-desc">Automatyczny atak przeciwników w zasięgu</div>
+                    </div>
+
+                    <div class="module" data-module="velocity" data-search="velocity knockback combat">
+                        <div class="module-top">
+                            <div class="module-name">Velocity</div>
+                            <div class="module-key">V</div>
+                        </div>
+                        <div class="module-desc">Redukcja knockbacku od uderzeń</div>
+                    </div>
+
+                    <div class="module active" data-module="autoclicker" data-search="autoclicker clicker combat auto">
+                        <div class="module-top">
+                            <div class="module-name">AutoClicker</div>
+                            <div class="module-key">C</div>
+                        </div>
+                        <div class="module-desc">Automatyczne klikanie LPM</div>
+                    </div>
+
+                    <div class="module" data-module="criticals" data-search="criticals critical combat attack">
+                        <div class="module-top">
+                            <div class="module-name">Criticals</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Wymuszanie critical hitów</div>
+                    </div>
+
+                    <div class="module" data-module="antibot" data-search="antibot bot combat">
+                        <div class="module-top">
+                            <div class="module-name">AntiBot</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Wykrywanie i ignorowanie botów</div>
+                    </div>
+
+                    <div class="module" data-module="wtap" data-search="wtap tap combat movement">
+                        <div class="module-top">
+                            <div class="module-name">WTap</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Automatyczne W-tapping</div>
+                    </div>
+
+                    <div class="module" data-module="reach" data-search="reach range combat attack">
+                        <div class="module-top">
+                            <div class="module-name">Reach</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Zwiększony zasięg ataku</div>
+                    </div>
+
+                    <div class="module" data-module="aimassist" data-search="aimassist aim combat assist">
+                        <div class="module-top">
+                            <div class="module-name">AimAssist</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Pomoc w celowaniu</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movement Tab -->
+            <div class="tab-content" data-content="movement">
+                <div class="modules-grid">
+                    <div class="module active" data-module="speed" data-search="speed fast movement">
+                        <div class="module-top">
+                            <div class="module-name">Speed</div>
+                            <div class="module-key">X</div>
+                        </div>
+                        <div class="module-desc">Zwiększona prędkość poruszania</div>
+                    </div>
+
+                    <div class="module" data-module="fly" data-search="fly flight movement">
+                        <div class="module-top">
+                            <div class="module-name">Fly</div>
+                            <div class="module-key">F</div>
+                        </div>
+                        <div class="module-desc">Latanie w trybie survival</div>
+                    </div>
+
+                    <div class="module active" data-module="sprint" data-search="sprint run movement">
+                        <div class="module-top">
+                            <div class="module-name">Sprint</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Automatyczny sprint</div>
+                    </div>
+
+                    <div class="module" data-module="noslow" data-search="noslow slow movement">
+                        <div class="module-top">
+                            <div class="module-name">NoSlow</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Brak spowolnienia przy akcjach</div>
+                    </div>
+
+                    <div class="module" data-module="step" data-search="step blocks movement">
+                        <div class="module-top">
+                            <div class="module-name">Step</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Wchodzenie na wyższe bloki</div>
+                    </div>
+
+                    <div class="module" data-module="longjump" data-search="longjump jump movement">
+                        <div class="module-top">
+                            <div class="module-name">LongJump</div>
+                            <div class="module-key">L</div>
+                        </div>
+                        <div class="module-desc">Dalsze skakanie</div>
+                    </div>
+
+                    <div class="module" data-module="jesus" data-search="jesus water movement">
+                        <div class="module-top">
+                            <div class="module-name">Jesus</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Chodzenie po wodzie</div>
+                    </div>
+
+                    <div class="module" data-module="highjump" data-search="highjump jump movement">
+                        <div class="module-top">
+                            <div class="module-name">HighJump</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Wyższe skakanie</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Render Tab -->
+            <div class="tab-content" data-content="render">
+                <div class="modules-grid">
+                    <div class="module active" data-module="esp" data-search="esp render visual">
+                        <div class="module-top">
+                            <div class="module-name">ESP</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Renderowanie graczy przez ściany</div>
+                    </div>
+
+                    <div class="module active" data-module="tracers" data-search="tracers lines render visual">
+                        <div class="module-top">
+                            <div class="module-name">Tracers</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Linie prowadzące do graczy</div>
+                    </div>
+
+                    <div class="module" data-module="chestesp" data-search="chestesp chest esp render">
+                        <div class="module-top">
+                            <div class="module-name">ChestESP</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Pokazywanie skrzyń przez ściany</div>
+                    </div>
+
+                    <div class="module active" data-module="fullbright" data-search="fullbright brightness render">
+                        <div class="module-top">
+                            <div class="module-name">FullBright</div>
+                            <div class="module-key">B</div>
+                        </div>
+                        <div class="module-desc">Maksymalna jasność</div>
+                    </div>
+
+                    <div class="module" data-module="nametags" data-search="nametags names render">
+                        <div class="module-top">
+                            <div class="module-name">Nametags</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Ulepszone wyświetlanie nicków</div>
+                    </div>
+
+                    <div class="module" data-module="xray" data-search="xray ores render">
+                        <div class="module-top">
+                            <div class="module-name">XRay</div>
+                            <div class="module-key">Z</div>
+                        </div>
+                        <div class="module-desc">Widzenie rud przez bloki</div>
+                    </div>
+
+                    <div class="module" data-module="radar" data-search="radar map render">
+                        <div class="module-top">
+                            <div class="module-name">Radar</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Minimap z graczami</div>
+                    </div>
+
+                    <div class="module" data-module="chams" data-search="chams colors render">
+                        <div class="module-top">
+                            <div class="module-name">Chams</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Kolorowe modele graczy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Misc Tab -->
+            <div class="tab-content" data-content="misc">
+                <div class="modules-grid">
+                    <div class="module active" data-module="invwalk" data-search="invwalk inventory misc">
+                        <div class="module-top">
+                            <div class="module-name">InvWalk</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Ruch w otwartym ekwipunku</div>
+                    </div>
+
+                    <div class="module" data-module="nofall" data-search="nofall fall damage misc">
+                        <div class="module-top">
+                            <div class="module-name">NoFall</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Brak obrażeń od spadania</div>
+                    </div>
+
+                    <div class="module active" data-module="autoarmor" data-search="autoarmor armor misc">
+                        <div class="module-top">
+                            <div class="module-name">AutoArmor</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Automatyczne zakładanie zbroi</div>
+                    </div>
+
+                    <div class="module" data-module="cheststealer" data-search="cheststealer chest steal misc">
+                        <div class="module-top">
+                            <div class="module-name">ChestStealer</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Szybkie zabieranie ze skrzyń</div>
+                    </div>
+
+                    <div class="module" data-module="fastplace" data-search="fastplace place blocks misc">
+                        <div class="module-top">
+                            <div class="module-name">FastPlace</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Szybkie stawianie bloków</div>
+                    </div>
+
+                    <div class="module" data-module="timer" data-search="timer speed misc">
+                        <div class="module-top">
+                            <div class="module-name">Timer</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Przyspieszenie ticków gry</div>
+                    </div>
+
+                    <div class="module" data-module="scaffold" data-search="scaffold bridge blocks misc">
+                        <div class="module-top">
+                            <div class="module-name">Scaffold</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Automatyczne stawianie pod sobą</div>
+                    </div>
+
+                    <div class="module" data-module="disabler" data-search="disabler anticheat misc">
+                        <div class="module-top">
+                            <div class="module-name">Disabler</div>
+                            <div class="module-key">-</div>
+                        </div>
+                        <div class="module-desc">Wyłączanie antyczeatu</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Panel -->
+            <div class="tab-content" data-content="login">
+                <div class="special-panel login-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                            </svg>
+                        </div>
+                        <h2 class="panel-title">Login to Echo Cloud</h2>
+                        <p class="panel-subtitle">Access cloud configs and premium features</p>
+                    </div>
+
+                    <div class="login-form" id="loginForm">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" id="username" placeholder="Enter your username">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="password" placeholder="Enter your password">
+                        </div>
+                        <div class="form-hint">Demo credentials: username: 123, password: admin</div>
+                        <button class="primary-btn" id="loginBtn">
+                            <span>Login</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="login-success" id="loginSuccess" style="display: none;">
+                        <div class="success-icon">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <h3 class="success-title">Welcome back!</h3>
+                        <p class="success-text">You are now logged in to Echo Cloud</p>
+                        <button class="secondary-btn" id="logoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configs Panel -->
+            <div class="tab-content" data-content="configs">
+                <div class="special-panel configs-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"/>
+                            </svg>
+                        </div>
+                        <h2 class="panel-title">Configuration Manager</h2>
+                        <p class="panel-subtitle">Manage your client configurations</p>
+                    </div>
+
+                    <div class="configs-tabs">
+                        <button class="config-tab active" data-config-tab="online">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/>
+                                <line x1="16" y1="8" x2="2" y2="22"/>
+                                <line x1="17.5" y1="15" x2="9" y2="15"/>
+                            </svg>
+                            Online Configs
+                        </button>
+                        <button class="config-tab" data-config-tab="local">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                                <polyline points="13 2 13 9 20 9"/>
+                            </svg>
+                            Local Configs
+                        </button>
+                    </div>
+
+                    <div class="config-content active" data-config-content="online">
+                        <div class="config-login-required" id="configLoginRequired">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                            <h3>Login Required</h3>
+                            <p>Please login to access online configs</p>
+                            <button class="secondary-btn" onclick="document.querySelector('[data-tab=login]').click()">Go to Login</button>
+                        </div>
+
+                        <div class="config-list" id="onlineConfigs" style="display: none;">
+                            <div class="config-actions">
+                                <input type="text" class="config-search" placeholder="Search configs...">
+                                <button class="primary-btn small-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    New Config
+                                </button>
+                            </div>
+                            <div class="configs-grid">
+                                <div class="config-card">
+                                    <div class="config-card-header">
+                                        <h4>Hypixel PvP</h4>
+                                        <span class="config-badge">Cloud</span>
+                                    </div>
+                                    <p class="config-description">Optimized for Hypixel duels and bedwars</p>
+                                    <div class="config-meta">
+                                        <span>Modified: 2 days ago</span>
+                                        <span>•</span>
+                                        <span>15 modules</span>
+                                    </div>
+                                    <div class="config-actions-row">
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="17 1 21 5 17 9"/>
+                                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn delete-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="config-card">
+                                    <div class="config-card-header">
+                                        <h4>Ghost Mode</h4>
+                                        <span class="config-badge">Cloud</span>
+                                    </div>
+                                    <p class="config-description">Undetectable settings for vanilla servers</p>
+                                    <div class="config-meta">
+                                        <span>Modified: 5 days ago</span>
+                                        <span>•</span>
+                                        <span>8 modules</span>
+                                    </div>
+                                    <div class="config-actions-row">
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="17 1 21 5 17 9"/>
+                                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn delete-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="config-content" data-config-content="local">
+                        <div class="config-list">
+                            <div class="config-actions">
+                                <input type="text" class="config-search" placeholder="Search configs...">
+                                <button class="primary-btn small-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    New Config
+                                </button>
+                            </div>
+                            <div class="configs-grid">
+                                <div class="config-card">
+                                    <div class="config-card-header">
+                                        <h4>Default Config</h4>
+                                        <span class="config-badge local">Local</span>
+                                    </div>
+                                    <p class="config-description">Default client configuration</p>
+                                    <div class="config-meta">
+                                        <span>Modified: 1 hour ago</span>
+                                        <span>•</span>
+                                        <span>12 modules</span>
+                                    </div>
+                                    <div class="config-actions-row">
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="17 1 21 5 17 9"/>
+                                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn delete-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="config-card">
+                                    <div class="config-card-header">
+                                        <h4>Testing Config</h4>
+                                        <span class="config-badge local">Local</span>
+                                    </div>
+                                    <p class="config-description">Experimental features testing</p>
+                                    <div class="config-meta">
+                                        <span>Modified: Today</span>
+                                        <span>•</span>
+                                        <span>20 modules</span>
+                                    </div>
+                                    <div class="config-actions-row">
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="17 1 21 5 17 9"/>
+                                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                            </svg>
+                                        </button>
+                                        <button class="icon-btn delete-btn">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customize Panel -->
+            <div class="tab-content" data-content="customize">
+                <div class="special-panel customize-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M2 12h20M17 7l-10 10M7 7l10 10"/>
+                            </svg>
+                        </div>
+                        <h2 class="panel-title">AI Customization Studio</h2>
+                        <p class="panel-subtitle">Describe your design vision and let AI customize your client</p>
+                    </div>
+
+                    <div class="customize-container">
+                        <div class="customize-sidebar">
+                            <h3 class="sidebar-title">Select Component</h3>
+                            <p class="sidebar-desc">Choose one component to customize</p>
+                            <div class="component-list">
+                                <div class="component-item active" data-component="clickgui">
+                                    <div class="component-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="9" y1="3" x2="9" y2="21"/>
+                                        </svg>
+                                    </div>
+                                    <div class="component-info">
+                                        <div class="component-name">ClickGUI</div>
+                                        <div class="component-status">Selected</div>
+                                    </div>
+                                </div>
+                                <div class="component-item" data-component="targethud">
+                                    <div class="component-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <circle cx="12" cy="12" r="6"/>
+                                            <circle cx="12" cy="12" r="2"/>
+                                        </svg>
+                                    </div>
+                                    <div class="component-info">
+                                        <div class="component-name">TargetHUD</div>
+                                        <div class="component-status">Available</div>
+                                    </div>
+                                </div>
+                                <div class="component-item" data-component="arraylist">
+                                    <div class="component-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="8" y1="6" x2="21" y2="6"/>
+                                            <line x1="8" y1="12" x2="21" y2="12"/>
+                                            <line x1="8" y1="18" x2="21" y2="18"/>
+                                            <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                            <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                            <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                        </svg>
+                                    </div>
+                                    <div class="component-info">
+                                        <div class="component-name">ArrayList</div>
+                                        <div class="component-status">Available</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="reset-btn" id="resetDesignBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                                Reset to Default
+                            </button>
+                        </div>
+
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="chat-message ai-message">
+                                    <div class="message-avatar">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2v20M2 12h20M17 7l-10 10M7 7l10 10"/>
+                                        </svg>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-header">
+                                            <span class="message-sender">Echo AI</span>
+                                            <span class="message-time">Just now</span>
+                                        </div>
+                                        <div class="message-text">
+                                            Hello! I'm here to help you customize your client. Tell me what kind of design you'd like - colors, style, animations, or any specific ideas you have in mind. I'll apply your preferences to the selected component.
+                                            <br><br>
+                                            Currently selected: <strong>ClickGUI</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="chat-input-container">
+                                <textarea class="chat-input" id="chatInput" placeholder="Describe your design vision... (e.g., 'Make it dark purple with smooth animations')" rows="3"></textarea>
+                                <button class="send-btn" id="sendBtn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Sidebar -->
+        <div class="settings-sidebar" id="settingsSidebar">
+            <div id="settings-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
