@@ -7,7 +7,9 @@
 		"MixinKeyboardHandler",
 		"MixinLevelRenderer",
 		"MixinLocalPlayer",
-		"MixinMinecraft"
+		"MixinMinecraft",
+		"MixinTitleScreen",
+		"MixinMultiplayerScreen"
 	],
 	"injectors": {
 		"defaultRequire": 1

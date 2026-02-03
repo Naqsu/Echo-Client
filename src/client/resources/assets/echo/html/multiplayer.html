@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Client - Multiplayer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ffffff;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-hover: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: white;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Animated Background */
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(15, 23, 42, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(30, 27, 75, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(17, 24, 39, 1) 0%, #0a0a0a 100%);
+        }
+
+        .bg-particles {
+            position: absolute;
+            inset: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+        }
+
+        .particle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+
+        .bg-gradient-orbs {
+            position: absolute;
+            inset: 0;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.08;
+            animation: orbFloat 25s ease-in-out infinite;
+            mix-blend-mode: screen;
+        }
+
+        .gradient-orb:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.8), transparent 70%);
+            top: -15%;
+            left: -10%;
+            animation-duration: 30s;
+        }
+
+        .gradient-orb:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.6), transparent 70%);
+            bottom: -15%;
+            right: -5%;
+            animation-duration: 35s;
+            animation-delay: -10s;
+        }
+
+        .gradient-orb:nth-child(3) {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.5), transparent 70%);
+            top: 40%;
+            left: 50%;
+            animation-duration: 40s;
+            animation-delay: -20s;
+        }
+
+        .gradient-orb:nth-child(4) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent 70%);
+            top: 10%;
+            right: 20%;
+            animation-duration: 38s;
+            animation-delay: -15s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.08;
+            }
+            25% {
+                transform: translate(40px, -50px) scale(1.15);
+                opacity: 0.12;
+            }
+            50% {
+                transform: translate(-30px, 30px) scale(0.9);
+                opacity: 0.06;
+            }
+            75% {
+                transform: translate(50px, 40px) scale(1.1);
+                opacity: 0.1;
+            }
+        }
+
+        .bg-mesh {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.015) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1.5px, transparent 1.5px);
+            background-size: 60px 60px;
+            animation: meshMove 30s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes meshMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .bg-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-overlay);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 5px;
+        }
+
+        .title-section p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .server-count {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+
+        .server-count span {
+            font-weight: 700;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        /* Server Grid */
+        .server-grid {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 5px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .server-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .server-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+
+        .server-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .server-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .server-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            width: 420px;
+            max-width: 90%;
+        }
+
+        .server-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: white;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .server-card:hover {
+            background: var(--card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .server-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .server-card.selected {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .server-card.selected::before {
+            transform: scaleX(1);
+        }
+
+        .server-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            background: #000;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .server-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .server-name {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .server-ip {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-weight: 300;
+        }
+
+        .server-ping {
+            font-size: 0.7rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .server-ping.online {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+        }
+
+        /* Bottom Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: white;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .btn:hover {
+            background: var(--card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:hover::after {
+            transform: scaleX(0.5);
+        }
+
+        .btn.primary {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            font-weight: 700;
+        }
+
+        .btn.primary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn.danger {
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.2);
+        }
+
+        .btn.danger:hover {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.4);
+        }
+
+        .btn.danger::after {
+            background: #ff6b6b;
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid var(--border-hover);
+            border-radius: 16px;
+            padding: 32px;
+            width: 90%;
+            max-width: 420px;
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 28px;
+        }
+
+        /* Info Corner */
+        .info-corner {
+            position: fixed;
+            bottom: 25px;
+            left: 40px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            font-weight: 300;
+            z-index: 3;
+            line-height: 1.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            width: 100%;
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+
+<div class="background">
+    <div class="bg-gradient-orbs">
+        <div class="gradient-orb"></div>
+        <div class="gradient-orb"></div>
+        <div class="gradient-orb"></div>
+        <div class="gradient-orb"></div>
+    </div>
+    <div class="bg-mesh"></div>
+    <div class="bg-particles" id="particles"></div>
+    <div class="bg-vignette"></div>
+</div>
+
+<div class="overlay"></div>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="title-section">
+            <h1>Multiplayer</h1>
+            <p>Server Browser</p>
+        </div>
+        <div class="server-count">
+            <span id="server-count">0</span> servers available
+        </div>
+    </div>
+
+    <!-- Server List -->
+    <div class="server-grid" id="server-list">
+        <!-- Servers will be injected here -->
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="btn" onclick="sendAction('back')">Back</button>
+        <div class="spacer"></div>
+        <button class="btn danger" onclick="deleteSelected()">Delete</button>
+        <button class="btn" onclick="openModal('modal-add')">Add Server</button>
+        <button class="btn" onclick="openModal('modal-direct')">Direct Connect</button>
+        <button class="btn primary" onclick="connectSelected()">Join Server</button>
+    </div>
+</div>
+
+<!-- Add Server Modal -->
+<div class="modal-overlay" id="modal-add">
+    <div class="modal">
+        <h2>Add Server</h2>
+        <div class="input-group">
+            <label>Server Name</label>
+            <input type="text" id="add-name" placeholder="My Server">
+        </div>
+        <div class="input-group">
+            <label>Server Address</label>
+            <input type="text" id="add-ip" placeholder="play.server.com">
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('modal-add')">Cancel</button>
+            <button class="btn primary" onclick="confirmAdd()">Add Server</button>
+        </div>
+    </div>
+</div>
+
+<!-- Direct Connect Modal -->
+<div class="modal-overlay" id="modal-direct">
+    <div class="modal">
+        <h2>Direct Connect</h2>
+        <div class="input-group">
+            <label>Server Address</label>
+            <input type="text" id="direct-ip" placeholder="127.0.0.1:25565">
+        </div>
+        <div class="modal-actions">
+            <button class="btn" onclick="closeModal('modal-direct')">Cancel</button>
+            <button class="btn primary" onclick="confirmDirect()">Connect</button>
+        </div>
+    </div>
+</div>
+
+<div class="info-corner">
+    Echo Client v1.0.0-stable<br>
+    Multiplayer Server Manager
+</div>
+
+<script>
+    let selectedIndex = -1;
+
+    // Generate floating particles
+    function createParticles() {
+        const container = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            const startX = Math.random() * 100;
+            const drift = (Math.random() - 0.5) * 100;
+            const duration = 15 + Math.random() * 20;
+            const delay = Math.random() * 10;
+            const size = 1 + Math.random() * 2;
+
+            particle.style.left = startX + '%';
+            particle.style.bottom = '-5px';
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.animationDuration = duration + 's';
+            particle.style.animationDelay = delay + 's';
+            particle.style.setProperty('--drift', drift + 'px');
+            particle.style.opacity = 0.3 + Math.random() * 0.3;
+
+            container.appendChild(particle);
+        }
+    }
+
+    createParticles();
+
+    // Send action to Java
+    function sendAction(action) {
+        window.location.hash = "echo:" + action + ":" + Date.now();
+    }
+
+    // Load servers from Java
+    function loadServers(serversJson) {
+        const list = document.getElementById('server-list');
+        const count = serversJson.length;
+        document.getElementById('server-count').innerText = count;
+        list.innerHTML = '';
+        selectedIndex = -1;
+
+        if (count === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <h3>No Servers Yet</h3>
+                    <p>Add a server to get started</p>
+                </div>
+            `;
+            return;
+        }
+
+        serversJson.forEach((server, index) => {
+            const card = document.createElement('div');
+            card.className = 'server-card';
+            card.onclick = () => selectServer(index, card);
+            card.ondblclick = () => { selectServer(index, card); connectSelected(); };
+
+            const iconSrc = server.icon || 'https://media.forgecdn.net/avatars/thumbnails/5/796/256/256/635351433944342580.png';
+            const pingClass = server.ping > 0 ? 'online' : '';
+            const pingText = server.ping > 0 ? server.ping + ' ms' : 'Offline';
+
+            card.innerHTML = `
+                <img src="${iconSrc}" class="server-icon" alt="Server Icon">
+                <div class="server-info">
+                    <div class="server-name">${server.name}</div>
+                    <div class="server-ip">${server.ip}</div>
+                </div>
+                <div class="server-ping ${pingClass}">${pingText}</div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    // Select server
+    function selectServer(index, element) {
+        selectedIndex = index;
+        document.querySelectorAll('.server-card').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    // Connect to selected server
+    function connectSelected() {
+        if (selectedIndex !== -1) {
+            sendAction('connect:' + selectedIndex);
+        }
+    }
+
+    // Delete selected server
+    function deleteSelected() {
+        if (selectedIndex !== -1) {
+            if (confirm("Remove this server from your list?")) {
+                sendAction('delete:' + selectedIndex);
+            }
+        }
+    }
+
+    // Modal controls
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+
+    // Add server
+    function confirmAdd() {
+        const name = document.getElementById('add-name').value.trim();
+        const ip = document.getElementById('add-ip').value.trim();
+
+        if (!name || !ip) {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        const data = encodeURIComponent(name) + "|" + encodeURIComponent(ip);
+        sendAction('add_server:' + data);
+
+        document.getElementById('add-name').value = "";
+        document.getElementById('add-ip').value = "";
+        closeModal('modal-add');
+    }
+
+    // Direct connect
+    function confirmDirect() {
+        const ip = document.getElementById('direct-ip').value.trim();
+
+        if (!ip) {
+            alert("Please enter a server address");
+            return;
+        }
+
+        sendAction('direct_connect:' + encodeURIComponent(ip));
+        document.getElementById('direct-ip').value = "";
+        closeModal('modal-direct');
+    }
+
+    // Close modal on ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                if (modal.classList.contains('active')) {
+                    closeModal(modal.id);
+                }
+            });
+        }
+    });
+
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeModal(overlay.id);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

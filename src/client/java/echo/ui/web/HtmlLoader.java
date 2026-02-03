@@ -20,6 +20,9 @@ public class HtmlLoader {
         copyResource("clickgui/clickgui.html");
         copyResource("clickgui/script.js");
         copyResource("clickgui/styles.css");
+
+        copyResource("mainmenu.html");
+        copyResource("multiplayer.html");
     }
 
     private static void copyResource(String fileName) {
